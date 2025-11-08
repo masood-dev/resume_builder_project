@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume Builder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        /* Animated gradient background */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scale in animation */
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Slide in from right */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Loading view animation */
+        #loading-view {
+            animation: fadeIn 0.5s ease;
+        }
+
+        #loading-view > div {
+            animation: pulse 2s ease infinite;
+        }
+
+        /* Auth view styling */
+        #auth-view {
+            animation: fadeIn 0.6s ease;
+        }
+
+        #auth-view .w-full.max-w-md {
+            animation: scaleIn 0.6s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Tab styling with animation */
+        #tab-login, #tab-register {
+            transition: all 0.3s ease;
+        }
+
+        #tab-login:hover, #tab-register:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Input fields styling */
+        #auth-view input,
+        #resume-form input,
+        #resume-form textarea {
+            transition: all 0.3s ease;
+        }
+
+        #auth-view input:focus,
+        #resume-form input:focus,
+        #resume-form textarea:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Button styling with hover effects */
+        button {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Google sign-in button special styling */
+        #google-signin-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        #google-signin-btn:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        /* App view container */
+        #app-view {
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* App header styling */
+        #app-header {
+            animation: slideInRight 0.6s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #welcome-msg {
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Print button container */
+        #print-button-container {
+            animation: slideInRight 0.7s ease;
+        }
+
+        #print-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #print-btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Form panel styling */
+        #form-panel {
+            animation: fadeIn 0.8s ease;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        #form-panel h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Fieldset styling */
+        fieldset {
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+        }
+
+        fieldset:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        fieldset legend {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Add button styling */
+        #add-skill-btn,
+        #add-exp-btn,
+        #add-edu-btn,
+        #add-language-btn,
+        #add-ref-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        #add-skill-btn:hover,
+        #add-exp-btn:hover,
+        #add-edu-btn:hover,
+        #add-language-btn:hover,
+        #add-ref-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        /* Remove button styling */
+        .remove-skill-btn,
+        .remove-exp-btn,
+        .remove-edu-btn,
+        .remove-language-btn,
+        .remove-ref-btn {
+            transition: all 0.3s ease;
+        }
+
+        .remove-skill-btn:hover,
+        .remove-exp-btn:hover,
+        .remove-edu-btn:hover,
+        .remove-language-btn:hover,
+        .remove-ref-btn:hover {
+            transform: scale(1.2) rotate(90deg);
+        }
+
+        /* List items animation */
+        #skills-list-form > div,
+        #exp-list-form > div,
+        #edu-list-form > div,
+        #languages-list-form > div,
+        #ref-list-form > div {
+            animation: slideInRight 0.3s ease;
+        }
+
+        /* Logout button */
+        #logout-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        #logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Google modal styling */
+        #google-modal {
+            backdrop-filter: blur(8px);
+        }
+
+        #google-modal > div {
+            animation: scaleIn 0.4s ease;
+        }
+
+        #google-modal button {
+            transition: all 0.3s ease;
+        }
+
+        #google-modal button:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        /* Container styling */
+        .container {
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Capitalize first letter of resume form inputs */
+        #resume-form input[type="text"],
+        #resume-form input[type="tel"],
+        #resume-form textarea {
+            text-transform: capitalize;
+        }
+
+        /* Keep email inputs lowercase */
+        #resume-form input[type="email"] {
+            text-transform: none;
+        }
+
+        /* Styles for the resume preview paper */
+        #resume-preview-wrapper {
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        
+        #resume-preview {
+            background-color: #ffffff;
+            /* A4-like aspect ratio (approx) */
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 0;
+            margin: 2rem auto;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+
+        /* Print styles */
+        @media print {
+            /* Remove browser default headers and footers */
+            @page {
+                margin: 0;
+                size: A4;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+            
+            /* Hide the form panel, print button, and header */
+            #form-panel,
+            #print-button-container,
+            #app-header,
+            #auth-view, 
+            #loading-view,
+            #google-modal {
+                display: none !important;
+            }
+            
+            #app-view {
+                display: block !important;
+            }
+
+            /* Show the resume preview wrapper but remove styling */
+            #resume-preview-wrapper {
+                background-color: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Ensure the resume preview takes up the whole page */
+            #resume-preview {
+                width: 100%;
+                min-height: 0;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border: none;
+                page-break-after: auto;
+            }
+            
+            /* Prevent page breaks in sections */
+            #resume-preview section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading View -->
+    <div id="loading-view" class="flex flex-col items-center justify-center min-h-screen">
+        <div class="relative">
+            <div class="w-24 h-24 border-8 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-6 text-2xl font-bold text-white tracking-wide">Resume Builder</div>
+        <div class="mt-2 text-white text-opacity-90">Loading your workspace...</div>
+    </div>
+
+    <!-- Auth View (Login/Register) -->
+    <div id="auth-view" class="min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">Resume Builder</h2>
+            
+            <!-- Auth Forms (Tabbed Interface) -->
+            <div class="mb-4 border-b border-gray-200">
+                <nav class="flex -mb-px" aria-label="Tabs">
+                    <button id="tab-login" class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm text-blue-600 border-blue-600">
+                        Login
+                    </button>
+                    <button id="tab-register" class="w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">
+                        Register
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email" required class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="relative">
+                    <input type="password" id="login-password" placeholder="Password" required class="w-full p-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" id="toggle-login-password" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg id="login-eye-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <svg id="login-eye-closed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                        </svg>
+                    </button>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+                    Login
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="space-y-4 hidden">
+                <input type="email" id="register-email" placeholder="Email" required class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="relative">
+                    <input type="password" id="register-password" placeholder="Password (min. 6 characters)" required class="w-full p-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" id="toggle-register-password" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg id="register-eye-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <svg id="register-eye-closed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                        </svg>
+                    </button>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-green-700 transition duration-300">
+                    Register
+                </button>
+            </form>
+            
+            <!-- Google Sign-In Button -->
+            <div class="mt-4">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                    </div>
+                </div>
+                <button id="google-signin-btn" class="mt-4 w-full flex items-center justify-center gap-3 bg-white text-gray-700 font-semibold py-3 px-4 rounded-lg shadow border border-gray-300 hover:bg-gray-50 transition duration-300">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+            </div>
+            
+            <p id="auth-error" class="text-red-500 text-sm mt-4 text-center"></p>
+        </div>
+    </div>
+
+    <!-- Google Account Selection Modal -->
+    <div id="google-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">Choose an account</h3>
+                <button id="close-google-modal" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
+            </div>
+            <p class="text-sm text-gray-600 mb-6">to continue to Resume Builder</p>
+            
+            <!-- Google Account Options -->
+            <div class="space-y-3">
+                <!-- Option 1: Sign in with Google Popup -->
+                <button id="google-popup-signin" class="w-full flex items-center gap-4 p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-200">
+                    <div class="flex-shrink-0">
+                        <svg class="w-10 h-10" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left flex-grow">
+                        <div class="font-semibold text-gray-800">Sign in with Google</div>
+                        <div class="text-sm text-gray-500">Use your Google account</div>
+                    </div>
+                </button>
+
+                <!-- Option 2: Use another account -->
+                <button id="google-another-account" class="w-full flex items-center gap-4 p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-200">
+                    <div class="flex-shrink-0 w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left flex-grow">
+                        <div class="font-semibold text-gray-800">Use another account</div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 text-center">
+                    To continue, Google will share your name, email address, and profile picture with Resume Builder.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App View (Resume Builder) -->
+    <div id="app-view" class="container mx-auto p-4 hidden">
+        
+        <!-- App Header (Welcome + Logout) -->
+        <header id="app-header" class="flex justify-between items-center mb-4">
+            <span id="welcome-msg" class="text-gray-700">Welcome!</span>
+            <button id="logout-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-red-600 transition duration-300">
+                Logout
+            </button>
+        </header>
+
+        <!-- Print Button -->
+        <div id="print-button-container" class="mb-4 text-center md:text-right">
+            <button id="print-btn" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+                Print / Download PDF
+            </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Form Panel -->
+            <div id="form-panel" class="md:w-1/2 bg-white p-6 rounded-lg shadow-lg">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Resume Builder</h1>
+                <form id="resume-form" class="space-y-6">
+
+                    <!-- Personal Details -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Personal Details</legend>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <input type="text" id="name" placeholder="Full Name (e.g., Masood)" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="title" placeholder="Professional Title (e.g., Software Engineer)" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="email" id="email" placeholder="Email" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="tel" id="phone" placeholder="Phone" class="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="location" placeholder="Location (e.g., New Delhi, India)" class="md:col-span-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </fieldset>
+
+                    <!-- Professional Summary -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Professional Summary</legend>
+                        <textarea id="summary" placeholder="Write a brief summary about your professional background..." class="w-full p-2 border border-gray-300 rounded-md mt-4 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </fieldset>
+
+                    <!-- Skills -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Skills</legend>
+                        <div class="flex gap-2 mt-4">
+                            <input type="text" id="skill-input" placeholder="Add a skill (e.g., Python)" class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="add-skill-btn" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-600 transition">Add</button>
+                        </div>
+                        <div id="skills-list-form" class="mt-4 space-y-2">
+                            <!-- Added skills will appear here -->
+                        </div>
+                    </fieldset>
+
+                    <!-- Work Experience -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Work Experience</legend>
+                        <div class="space-y-4 mt-4">
+                            <input type="text" id="exp-title" placeholder="Job Title" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="exp-company" placeholder="Company" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="exp-location" placeholder="Location (e.g., Remote)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="flex gap-4">
+                                <input type="text" id="exp-start-date" placeholder="Start Date (e.g., Jan 2020)" class="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="exp-end-date" placeholder="End Date (e.g., Present)" class="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <textarea id="exp-desc" placeholder="Job description and achievements (use '*' for bullet points)" class="w-full p-2 border border-gray-300 rounded-md h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <button id="add-exp-btn" class="w-full bg-green-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-600 transition">Add Experience</button>
+                        </div>
+                        <div id="exp-list-form" class="mt-4 space-y-2">
+                            <!-- Added experiences will appear here -->
+                        </div>
+                    </fieldset>
+                    
+                    <!-- Education -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Education</legend>
+                        <div class="space-y-4 mt-4">
+                            <input type="text" id="edu-degree" placeholder="Degree (e.g., B.Tech in Computer Science)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="edu-school" placeholder="School/University" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="edu-location" placeholder="Location (e.g., Mumbai, India)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="flex gap-4">
+                                <input type="text" id="edu-start-date" placeholder="Start Date (e.g., Aug 2016)" class="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="edu-end-date" placeholder="End Date (e.g., May 2020)" class="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button id="add-edu-btn" class="w-full bg-green-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-600 transition">Add Education</button>
+                        </div>
+                        <div id="edu-list-form" class="mt-4 space-y-2">
+                            <!-- Added education will appear here -->
+                        </div>
+                    </fieldset>
+
+                    <!-- Languages -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">Languages</legend>
+                        <div class="flex gap-2 mt-4">
+                            <input type="text" id="language-input" placeholder="Add a language (e.g., English)" class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="add-language-btn" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-600 transition">Add</button>
+                        </div>
+                        <div id="languages-list-form" class="mt-4 space-y-2">
+                            <!-- Added languages will appear here -->
+                        </div>
+                    </fieldset>
+
+                    <!-- References -->
+                    <fieldset class="border border-gray-300 p-4 rounded-lg">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">References</legend>
+                        <div class="space-y-4 mt-4">
+                            <input type="text" id="ref-name" placeholder="Reference Name" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="ref-title" placeholder="Title/Position (e.g., CEO)" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="ref-company" placeholder="Company/Organization" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="tel" id="ref-phone" placeholder="Phone" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="email" id="ref-email" placeholder="Email" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button id="add-ref-btn" class="w-full bg-green-500 text-white font-semibold px-4 py-2 rounded-md hover:bg-green-600 transition">Add Reference</button>
+                        </div>
+                        <div id="ref-list-form" class="mt-4 space-y-2">
+                            <!-- Added references will appear here -->
+                        </div>
+                    </fieldset>
+
+                </form>
+            </div>
+
+            <!-- Preview Panel -->
+            <div id="resume-preview-wrapper" class="md:w-1/2">
+                <div id="resume-preview" class="text-gray-800">
+                    <!-- Preview Header -->
+                    <header class="bg-gray-200 p-6 mb-0">
+                        <h1 id="preview-name" class="text-4xl font-bold text-gray-900">Your Name</h1>
+                        <p id="preview-title" class="text-lg text-gray-700 mt-1">Your Professional Title</p>
+                    </header>
+
+                    <!-- Contact Bar -->
+                    <div class="bg-gray-300 px-6 py-3 flex justify-start gap-x-6 text-xs text-gray-700 flex-wrap">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+                            <span id="preview-contact-phone">Phone</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                            <span id="preview-contact-email">Email</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                            <span id="preview-contact-location">Location</span>
+                        </span>
+                    </div>
+
+                    <!-- Two Column Layout -->
+                    <div class="flex">
+                        <!-- Left Column -->
+                        <div class="w-1/3 bg-white p-6 space-y-6">
+                            <!-- Education Section -->
+                            <section id="education-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">Education</h2>
+                                <div id="preview-education" class="space-y-4 text-sm">
+                                    <!-- Education items will be populated here -->
+                                </div>
+                            </section>
+
+                            <!-- Skills Section -->
+                            <section id="skills-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">Skills</h2>
+                                <ul id="preview-skills" class="space-y-2 text-sm">
+                                    <!-- Skills will be populated here -->
+                                </ul>
+                            </section>
+
+                            <!-- Languages Section -->
+                            <section id="languages-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">Language</h2>
+                                <ul id="preview-languages" class="space-y-2 text-sm">
+                                    <!-- Languages will be populated here -->
+                                </ul>
+                            </section>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="w-2/3 bg-white p-6 border-l border-gray-300 space-y-6">
+                            <!-- Profile Section -->
+                            <section id="profile-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">Profile</h2>
+                                <p id="preview-summary" class="text-sm text-gray-700 leading-relaxed">Your professional summary will appear here...</p>
+                            </section>
+
+                            <!-- Experience Section -->
+                            <section id="experience-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">Work Experience</h2>
+                                <div id="preview-experience" class="space-y-4">
+                                    <!-- Experience items will be populated here -->
+                                </div>
+                            </section>
+
+                            <!-- References Section -->
+                            <section id="references-section">
+                                <h2 class="text-lg font-bold text-gray-900 mb-3 uppercase">References</h2>
+                                <div id="preview-references" class="grid grid-cols-2 gap-4">
+                                    <!-- References will be populated here -->
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+        import { 
+            getAuth, 
+            signInWithCustomToken, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            GoogleAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            onSnapshot,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+        // --- GLOBAL VARIABLES ---
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8uinaPyv3WgLWheOpo6IIrzOo_xbwED0",
+            authDomain: "resume-builder-cd571.firebaseapp.com",
+            projectId: "resume-builder-cd571",
+            storageBucket: "resume-builder-cd571.firebasestorage.app",
+            messagingSenderId: "823843670189",
+            appId: "1:823843670189:web:59c8efd6b18c13ddc55e24",
+            measurementId: "G-D0S2E97KYB"
+        };
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        setLogLevel('Debug'); // Enable Firestore logging
+
+        let userId = null;
+        let resumeDocRef = null;
+        let unsubscribeResume = null; // To detach the onSnapshot listener
+
+        // --- STATE ---
+        let skills = [];
+        let experiences = [];
+        let educations = [];
+        let languages = [];
+        let references = [];
+
+        // --- APP VIEWS ---
+        const loadingView = document.getElementById('loading-view');
+        const authView = document.getElementById('auth-view');
+        const appView = document.getElementById('app-view');
+
+        // --- AUTH SELECTORS ---
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authError = document.getElementById('auth-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const welcomeMsg = document.getElementById('welcome-msg');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
+        
+        // Google Modal Selectors
+        const googleModal = document.getElementById('google-modal');
+        const closeGoogleModal = document.getElementById('close-google-modal');
+        const googlePopupSignin = document.getElementById('google-popup-signin');
+        const googleAnotherAccount = document.getElementById('google-another-account');
+        
+        // --- FORM SELECTORS ---
+        const form = document.getElementById('resume-form');
+        const nameInput = document.getElementById('name');
+        const titleInput = document.getElementById('title');
+        const emailInput = document.getElementById('email');
+        const phoneInput = document.getElementById('phone');
+        const locationInput = document.getElementById('location');
+        const summaryInput = document.getElementById('summary');
+        
+        // Static Preview Selectors
+        const previewName = document.getElementById('preview-name');
+        const previewTitle = document.getElementById('preview-title');
+        const previewLocation = document.getElementById('preview-contact-location');
+        const previewPhone = document.getElementById('preview-contact-phone');
+        const previewEmail = document.getElementById('preview-contact-email');
+        const previewSummary = document.getElementById('preview-summary');
+
+        // Dynamic Input Selectors
+        const skillInput = document.getElementById('skill-input');
+        const addSkillBtn = document.getElementById('add-skill-btn');
+        const skillsListForm = document.getElementById('skills-list-form');
+        
+        const addExpBtn = document.getElementById('add-exp-btn');
+        const expListForm = document.getElementById('exp-list-form');
+        
+        const addEduBtn = document.getElementById('add-edu-btn');
+        const eduListForm = document.getElementById('edu-list-form');
+
+        const languageInput = document.getElementById('language-input');
+        const addLanguageBtn = document.getElementById('add-language-btn');
+        const languagesListForm = document.getElementById('languages-list-form');
+
+        const addRefBtn = document.getElementById('add-ref-btn');
+        const refListForm = document.getElementById('ref-list-form');
+
+        // Dynamic Preview Selectors
+        const previewSkills = document.getElementById('preview-skills');
+        const previewExperience = document.getElementById('preview-experience');
+        const previewEducation = document.getElementById('preview-education');
+        const previewLanguages = document.getElementById('preview-languages');
+        const previewReferences = document.getElementById('preview-references');
+
+        // Print Button
+        const printBtn = document.getElementById('print-btn');
+
+        // --- DEBOUNCE UTILITY ---
+        let debounceTimer;
+        function debounce(func, delay) {
+            return function(...args) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        // --- FIREBASE & DATA FUNCTIONS ---
+
+        /**
+         * Saves the entire resume state to Firestore.
+         */
+        async function saveResumeData() {
+            if (!resumeDocRef) return;
+            console.log('Saving data...');
+            
+            const data = {
+                name: nameInput.value,
+                title: titleInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                location: locationInput.value,
+                summary: summaryInput.value,
+                skills: skills,
+                experiences: experiences,
+                educations: educations,
+                languages: languages,
+                references: references
+            };
+            
+            try {
+                await setDoc(resumeDocRef, data, { merge: true });
+                console.log('Data saved successfully.');
+            } catch (error) {
+                console.error("Error saving document: ", error);
+            }
+        }
+        
+        // Create a debounced version of the save function
+        const debouncedSave = debounce(saveResumeData, 1000);
+
+        /**
+         * Loads resume data from Firestore and sets up a real-time listener.
+         */
+        function loadResumeData() {
+            if (!resumeDocRef) return;
+
+            // Detach any existing listener
+            if (unsubscribeResume) {
+                unsubscribeResume();
+            }
+
+            console.log('Setting up snapshot listener for resume data...');
+            unsubscribeResume = onSnapshot(resumeDocRef, (doc) => {
+                if (doc.exists()) {
+                    console.log("Current data: ", doc.data());
+                    const data = doc.data();
+                    
+                    // Update form fields
+                    nameInput.value = data.name || '';
+                    titleInput.value = data.title || '';
+                    emailInput.value = data.email || '';
+                    phoneInput.value = data.phone || '';
+                    locationInput.value = data.location || '';
+                    summaryInput.value = data.summary || '';
+                    
+                    // Update local state arrays
+                    skills = data.skills || [];
+                    experiences = data.experiences || [];
+                    educations = data.educations || [];
+                    languages = data.languages || [];
+                    references = data.references || [];
+                    
+                    // Re-render everything with the new data
+                    renderAllFormLists();
+                    renderAll();
+                    
+                } else {
+                    console.log("No resume data found for this user. Starting fresh.");
+                    // Reset fields if no data
+                    resetLocalData();
+                    renderAllFormLists();
+                    renderAll();
+                }
+            }, (error) => {
+                console.error("Error listening to document: ", error);
+            });
+        }
+        
+        /**
+         * Resets local state variables and clears form fields.
+         */
+        function resetLocalData() {
+            skills = [];
+            experiences = [];
+            educations = [];
+            languages = [];
+            references = [];
+            
+            nameInput.value = '';
+            titleInput.value = '';
+            emailInput.value = '';
+            phoneInput.value = '';
+            locationInput.value = '';
+            summaryInput.value = '';
+        }
+
+        // --- RENDER FUNCTIONS ---
+        
+        /**
+         * Helper function to capitalize first letter of each word
+         */
+        function capitalizeText(text) {
+            if (!text) return text;
+            return text.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+        }
+        
+        function renderAllFormLists() {
+            renderSkillsFormList();
+            renderExpFormList();
+            renderEduFormList();
+            renderLanguagesFormList();
+            renderRefFormList();
+        }
+
+        /**
+         * Updates the static fields in the resume preview.
+         */
+        function renderStaticPreview() {
+            previewName.textContent = capitalizeText(nameInput.value) || 'Your Name';
+            previewTitle.textContent = capitalizeText(titleInput.value) || 'Your Professional Title';
+            previewLocation.textContent = capitalizeText(locationInput.value) || 'Location';
+            previewPhone.textContent = phoneInput.value || 'Phone';
+            previewEmail.textContent = emailInput.value || 'Email';
+
+            previewSummary.textContent = capitalizeText(summaryInput.value) || 'Your professional summary will appear here...';
+        }
+
+        /**
+         * Renders the list of added skills in the form.
+         */
+        function renderSkillsFormList() {
+            skillsListForm.innerHTML = '';
+            skills.forEach((skill, index) => {
+                const skillTag = document.createElement('div');
+                skillTag.className = 'flex justify-between items-center bg-gray-100 p-2 rounded-md';
+                skillTag.innerHTML = `
+                    <span>${skill}</span>
+                    <button data-index="${index}" class="remove-skill-btn text-red-500 font-bold px-2 rounded hover:text-red-700">X</button>
+                `;
+                skillsListForm.appendChild(skillTag);
+            });
+        }
+        
+        /**
+         * Renders the list of added experiences in the form.
+         */
+        function renderExpFormList() {
+            expListForm.innerHTML = '';
+            experiences.forEach((exp, index) => {
+                const expTag = document.createElement('div');
+                expTag.className = 'flex justify-between items-center bg-gray-100 p-2 rounded-md';
+                expTag.innerHTML = `
+                    <span><strong>${exp.title}</strong> at ${exp.company}</span>
+                    <button data-index="${index}" class="remove-exp-btn text-red-500 font-bold px-2 rounded hover:text-red-700">X</button>
+                `;
+                expListForm.appendChild(expTag);
+            });
+        }
+        
+        /**
+         * Renders the list of added education in the form.
+         */
+        function renderEduFormList() {
+            eduListForm.innerHTML = '';
+            educations.forEach((edu, index) => {
+                const eduTag = document.createElement('div');
+                eduTag.className = 'flex justify-between items-center bg-gray-100 p-2 rounded-md';
+                eduTag.innerHTML = `
+                    <span><strong>${edu.degree}</strong> at ${edu.school}</span>
+                    <button data-index="${index}" class="remove-edu-btn text-red-500 font-bold px-2 rounded hover:text-red-700">X</button>
+                `;
+                eduListForm.appendChild(eduTag);
+            });
+        }
+
+        /**
+         * Renders the list of added languages in the form.
+         */
+        function renderLanguagesFormList() {
+            languagesListForm.innerHTML = '';
+            languages.forEach((language, index) => {
+                const langTag = document.createElement('div');
+                langTag.className = 'flex justify-between items-center bg-gray-100 p-2 rounded-md';
+                langTag.innerHTML = `
+                    <span>${language}</span>
+                    <button data-index="${index}" class="remove-language-btn text-red-500 font-bold px-2 rounded hover:text-red-700">X</button>
+                `;
+                languagesListForm.appendChild(langTag);
+            });
+        }
+
+        /**
+         * Renders the list of added references in the form.
+         */
+        function renderRefFormList() {
+            refListForm.innerHTML = '';
+            references.forEach((ref, index) => {
+                const refTag = document.createElement('div');
+                refTag.className = 'flex justify-between items-center bg-gray-100 p-2 rounded-md';
+                refTag.innerHTML = `
+                    <span><strong>${ref.name}</strong> - ${ref.company}</span>
+                    <button data-index="${index}" class="remove-ref-btn text-red-500 font-bold px-2 rounded hover:text-red-700">X</button>
+                `;
+                refListForm.appendChild(refTag);
+            });
+        }
+
+        /**
+         * Renders the dynamic skills list in the preview.
+         */
+        function renderSkillsPreview() {
+            previewSkills.innerHTML = '';
+            if (skills.length === 0) return;
+            
+            skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `
+                    <span class="text-gray-600">•</span>
+                    <span class="text-gray-700">${capitalizeText(skill)}</span>
+                `;
+                previewSkills.appendChild(li);
+            });
+        }
+
+        /**
+         * Renders the dynamic experience list in the preview.
+         * Formats bullet points from asterisks (*).
+         */
+        function renderExperiencePreview() {
+            previewExperience.innerHTML = '';
+            if (experiences.length === 0) return;
+            
+            experiences.forEach(exp => {
+                // Format description bullet points
+                const descriptionHtml = exp.desc
+                    .split('*') // Split by asterisk
+                    .filter(line => line.trim() !== '') // Remove empty lines
+                    .map(line => `<li class="text-xs">${capitalizeText(line.trim())}</li>`) // Wrap each line in <li> and capitalize
+                    .join('');
+
+                const expEntry = document.createElement('div');
+                expEntry.className = 'mb-4';
+                expEntry.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <h3 class="text-sm font-bold text-gray-900">${capitalizeText(exp.company)}</h3>
+                        <span class="text-xs text-gray-600">${exp.startDate} - ${exp.endDate}</span>
+                    </div>
+                    <p class="text-xs italic text-gray-700 mb-1">${capitalizeText(exp.title)}</p>
+                    <ul class="list-disc list-inside text-xs text-gray-700 space-y-1">
+                        ${descriptionHtml}
+                    </ul>
+                `;
+                previewExperience.appendChild(expEntry);
+            });
+        }
+        
+        /**
+         * Renders the dynamic education list in the preview.
+         */
+        function renderEducationPreview() {
+            previewEducation.innerHTML = '';
+            if (educations.length === 0) return;
+
+            educations.forEach(edu => {
+                const eduEntry = document.createElement('div');
+                eduEntry.className = 'mb-4';
+                eduEntry.innerHTML = `
+                    <h3 class="text-sm font-bold text-gray-900">${capitalizeText(edu.degree)}</h3>
+                    <p class="text-xs text-gray-700">${capitalizeText(edu.school)}</p>
+                    <p class="text-xs text-gray-600">(${edu.startDate} - ${edu.endDate})</p>
+                `;
+                previewEducation.appendChild(eduEntry);
+            });
+        }
+
+        /**
+         * Renders the dynamic languages list in the preview.
+         */
+        function renderLanguagesPreview() {
+            previewLanguages.innerHTML = '';
+            if (languages.length === 0) return;
+            
+            languages.forEach(language => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `
+                    <span class="text-gray-600">•</span>
+                    <span class="text-gray-700">${capitalizeText(language)}</span>
+                `;
+                previewLanguages.appendChild(li);
+            });
+        }
+
+        /**
+         * Renders the dynamic references list in the preview.
+         */
+        function renderReferencesPreview() {
+            previewReferences.innerHTML = '';
+            if (references.length === 0) return;
+
+            references.forEach(ref => {
+                const refEntry = document.createElement('div');
+                refEntry.className = 'text-xs';
+                refEntry.innerHTML = `
+                    <h3 class="font-bold text-gray-900">${capitalizeText(ref.name)}</h3>
+                    <p class="text-gray-700">${capitalizeText(ref.company)} / ${capitalizeText(ref.title)}</p>
+                    <p class="text-gray-600"><strong>Phone:</strong> ${ref.phone}</p>
+                    <p class="text-gray-600"><strong>Email:</strong> ${ref.email}</p>
+                `;
+                previewReferences.appendChild(refEntry);
+            });
+        }
+        
+        /**
+         * Main render function to update the entire preview.
+         */
+        function renderAll() {
+            renderStaticPreview();
+            renderSkillsPreview();
+            renderExperiencePreview();
+            renderEducationPreview();
+            renderLanguagesPreview();
+            renderReferencesPreview();
+        }
+
+        // --- AUTHENTICATION LOGIC ---
+
+        // Handle Auth State Changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                console.log('User is logged in:', user.uid);
+                userId = user.uid;
+                // Define the path to the user's private resume data
+                resumeDocRef = doc(db, 'artifacts', appId, 'users', userId, 'resumeData', 'main');
+                
+                welcomeMsg.textContent = `Welcome, ${user.email}`;
+                
+                // Load user's data
+                loadResumeData();
+                
+                // Show app, hide auth
+                appView.classList.remove('hidden');
+                authView.classList.add('hidden');
+                loadingView.classList.add('hidden');
+                
+            } else {
+                // User is signed out
+                console.log('User is logged out.');
+                userId = null;
+                resumeDocRef = null;
+                
+                // Detach listener if it exists
+                if (unsubscribeResume) {
+                    unsubscribeResume();
+                    unsubscribeResume = null;
+                }
+                
+                // Reset all local data and UI
+                resetLocalData();
+                renderAllFormLists();
+                renderAll();
+                
+                // Show auth, hide app
+                appView.classList.add('hidden');
+                authView.classList.remove('hidden');
+                loadingView.classList.add('hidden');
+            }
+        });
+
+        // Sign in with environment's custom token (MANDATORY)
+        async function signIn() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    console.log('Signing in with custom token...');
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    console.log('No custom token, user needs to log in manually or register.');
+                    // If no token, we just let onAuthStateChanged handle showing the authView
+                    loadingView.classList.add('hidden');
+                    authView.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error signing in:', error);
+                loadingView.classList.add('hidden');
+                authView.classList.remove('hidden');
+            }
+        }
+
+        // --- PASSWORD VISIBILITY TOGGLE ---
+        
+        // Toggle Login Password
+        const toggleLoginPassword = document.getElementById('toggle-login-password');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginEyeOpen = document.getElementById('login-eye-open');
+        const loginEyeClosed = document.getElementById('login-eye-closed');
+        
+        toggleLoginPassword.addEventListener('click', () => {
+            if (loginPasswordInput.type === 'password') {
+                loginPasswordInput.type = 'text';
+                loginEyeOpen.classList.add('hidden');
+                loginEyeClosed.classList.remove('hidden');
+            } else {
+                loginPasswordInput.type = 'password';
+                loginEyeOpen.classList.remove('hidden');
+                loginEyeClosed.classList.add('hidden');
+            }
+        });
+        
+        // Toggle Register Password
+        const toggleRegisterPassword = document.getElementById('toggle-register-password');
+        const registerPasswordInput = document.getElementById('register-password');
+        const registerEyeOpen = document.getElementById('register-eye-open');
+        const registerEyeClosed = document.getElementById('register-eye-closed');
+        
+        toggleRegisterPassword.addEventListener('click', () => {
+            if (registerPasswordInput.type === 'password') {
+                registerPasswordInput.type = 'text';
+                registerEyeOpen.classList.add('hidden');
+                registerEyeClosed.classList.remove('hidden');
+            } else {
+                registerPasswordInput.type = 'password';
+                registerEyeOpen.classList.remove('hidden');
+                registerEyeClosed.classList.add('hidden');
+            }
+        });
+
+        // Auth Tab Switching
+        tabLogin.addEventListener('click', () => {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            tabLogin.classList.add('text-blue-600', 'border-blue-600');
+            tabLogin.classList.remove('text-gray-500', 'border-transparent');
+            tabRegister.classList.add('text-gray-500', 'border-transparent');
+            tabRegister.classList.remove('text-blue-600', 'border-blue-600');
+            authError.textContent = '';
+        });
+
+        tabRegister.addEventListener('click', () => {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            tabRegister.classList.add('text-blue-600', 'border-blue-600');
+            tabRegister.classList.remove('text-gray-500', 'border-transparent');
+            tabLogin.classList.add('text-gray-500', 'border-transparent');
+            tabLogin.classList.remove('text-blue-600', 'border-blue-600');
+            authError.textContent = '';
+        });
+        
+        // Login Form Submit
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authError.textContent = '';
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged will handle the UI switch
+            } catch (error) {
+                console.error('Login error:', error.message);
+                authError.textContent = error.message;
+            }
+        });
+
+        // Register Form Submit
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            authError.textContent = '';
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged will handle the UI switch
+            } catch (error) {
+                console.error('Register error:', error.message);
+                authError.textContent = error.message;
+            }
+        });
+
+        // Google Sign-In Button - Show Modal
+        googleSignInBtn.addEventListener('click', () => {
+            authError.textContent = '';
+            googleModal.classList.remove('hidden');
+        });
+
+        // Close Google Modal
+        closeGoogleModal.addEventListener('click', () => {
+            googleModal.classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        googleModal.addEventListener('click', (e) => {
+            if (e.target === googleModal) {
+                googleModal.classList.add('hidden');
+            }
+        });
+
+        // Google Popup Sign-In (from modal)
+        googlePopupSignin.addEventListener('click', async () => {
+            authError.textContent = '';
+            const provider = new GoogleAuthProvider();
+            
+            try {
+                await signInWithPopup(auth, provider);
+                googleModal.classList.add('hidden');
+                // onAuthStateChanged will handle the UI switch
+            } catch (error) {
+                console.error('Google sign-in error:', error.message);
+                googleModal.classList.add('hidden');
+                authError.textContent = error.message;
+            }
+        });
+
+        // Google Another Account (from modal)
+        googleAnotherAccount.addEventListener('click', async () => {
+            authError.textContent = '';
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+            
+            try {
+                await signInWithPopup(auth, provider);
+                googleModal.classList.add('hidden');
+                // onAuthStateChanged will handle the UI switch
+            } catch (error) {
+                console.error('Google sign-in error:', error.message);
+                googleModal.classList.add('hidden');
+                authError.textContent = error.message;
+            }
+        });
+
+        // Logout Button
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                // onAuthStateChanged will handle the UI switch
+            } catch (error) {
+                console.error('Logout error:', error.message);
+            }
+        });
+
+
+        // --- EVENT LISTENERS (FOR DATA CHANGES) ---
+
+        // Update static fields on any form input AND save
+        form.addEventListener('input', (e) => {
+            // Only trigger for main form inputs, not dynamic list inputs
+            if (e.target.id.startsWith('exp-') || e.target.id.startsWith('edu-') || e.target.id.startsWith('skill-')) {
+                return;
+            }
+            renderStaticPreview();
+            debouncedSave();
+        });
+
+        // Add Skill
+        addSkillBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const skill = skillInput.value.trim();
+            if (skill) {
+                skills.push(skill);
+                skillInput.value = '';
+                renderSkillsFormList();
+                renderSkillsPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+        
+        // Remove Skill (using event delegation)
+        skillsListForm.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-skill-btn')) {
+                const index = e.target.dataset.index;
+                skills.splice(index, 1);
+                renderSkillsFormList();
+                renderSkillsPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+
+        // Add Experience
+        addExpBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const exp = {
+                title: document.getElementById('exp-title').value,
+                company: document.getElementById('exp-company').value,
+                location: document.getElementById('exp-location').value,
+                startDate: document.getElementById('exp-start-date').value,
+                endDate: document.getElementById('exp-end-date').value,
+                desc: document.getElementById('exp-desc').value,
+            };
+            
+            if (exp.title && exp.company) {
+                experiences.push(exp);
+                renderExpFormList();
+                renderExperiencePreview();
+                debouncedSave(); // Save changes
+                // Clear inputs
+                document.getElementById('exp-title').value = '';
+                document.getElementById('exp-company').value = '';
+                document.getElementById('exp-location').value = '';
+                document.getElementById('exp-start-date').value = '';
+                document.getElementById('exp-end-date').value = '';
+                document.getElementById('exp-desc').value = '';
+            }
+        });
+
+        // Remove Experience (using event delegation)
+        expListForm.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-exp-btn')) {
+                const index = e.target.dataset.index;
+                experiences.splice(index, 1);
+                renderExpFormList();
+                renderExperiencePreview();
+                debouncedSave(); // Save changes
+            }
+        });
+        
+        // Add Education
+        addEduBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const edu = {
+                degree: document.getElementById('edu-degree').value,
+                school: document.getElementById('edu-school').value,
+                location: document.getElementById('edu-location').value,
+                startDate: document.getElementById('edu-start-date').value,
+                endDate: document.getElementById('edu-end-date').value,
+            };
+            
+            if (edu.degree && edu.school) {
+                educations.push(edu);
+                renderEduFormList();
+                renderEducationPreview();
+                debouncedSave(); // Save changes
+                // Clear inputs
+                document.getElementById('edu-degree').value = '';
+                document.getElementById('edu-school').value = '';
+                document.getElementById('edu-location').value = '';
+                document.getElementById('edu-start-date').value = '';
+                document.getElementById('edu-end-date').value = '';
+            }
+        });
+
+        // Remove Education (using event delegation)
+        eduListForm.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-edu-btn')) {
+                const index = e.target.dataset.index;
+                educations.splice(index, 1);
+                renderEduFormList();
+                renderEducationPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+
+        // Add Language
+        addLanguageBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const language = languageInput.value.trim();
+            if (language) {
+                languages.push(language);
+                languageInput.value = '';
+                renderLanguagesFormList();
+                renderLanguagesPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+
+        // Remove Language (using event delegation)
+        languagesListForm.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-language-btn')) {
+                const index = e.target.dataset.index;
+                languages.splice(index, 1);
+                renderLanguagesFormList();
+                renderLanguagesPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+
+        // Add Reference
+        addRefBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ref = {
+                name: document.getElementById('ref-name').value,
+                title: document.getElementById('ref-title').value,
+                company: document.getElementById('ref-company').value,
+                phone: document.getElementById('ref-phone').value,
+                email: document.getElementById('ref-email').value,
+            };
+            
+            if (ref.name && ref.company) {
+                references.push(ref);
+                renderRefFormList();
+                renderReferencesPreview();
+                debouncedSave(); // Save changes
+                // Clear inputs
+                document.getElementById('ref-name').value = '';
+                document.getElementById('ref-title').value = '';
+                document.getElementById('ref-company').value = '';
+                document.getElementById('ref-phone').value = '';
+                document.getElementById('ref-email').value = '';
+            }
+        });
+
+        // Remove Reference (using event delegation)
+        refListForm.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-ref-btn')) {
+                const index = e.target.dataset.index;
+                references.splice(index, 1);
+                renderRefFormList();
+                renderReferencesPreview();
+                debouncedSave(); // Save changes
+            }
+        });
+
+        // Print Button
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+
+        // --- INITIALIZATION ---
+        
+        // Initial Render (to set placeholders)
+        renderAll();
+        
+        // Start the authentication process
+        signIn();
+
+    </script>
+</body>
+</html>
