@@ -38,7 +38,7 @@ A modern, single-page web application that allows users to create professional r
 1. Clone the repository:
 ```bash
 git clone https://github.com/masood-dev/resume_builder_project.git
-cd resume_builder_project/resume_builder_website
+cd resume_builder_project
 ```
 
 2. Open `index.html` in your browser, or serve it locally:
@@ -62,7 +62,7 @@ The project uses Firebase for authentication and data storage. The Firebase conf
 1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
 2. Enable Authentication (Email/Password and Google providers)
 3. Create a Firestore database
-4. Replace the `firebaseConfig` object in `index.html` with your credentials
+4. Replace the `firebaseConfig` object in `main.js` with your credentials
 
 ## Usage
 
@@ -79,9 +79,13 @@ The project uses Firebase for authentication and data storage. The Firebase conf
 ## Project Structure
 
 ```
-resume_builder_website/
-├── index.html          # Main application file (HTML, CSS, JS)
-└── README.md          # This file
+resume_builder_project/
+├── index.html          # Main HTML file
+├── main.js            # JavaScript application logic
+├── styles.css         # Custom styles and animations
+├── README.md          # This file
+├── LICENSE.md         # License information
+└── .gitignore         # Git ignore rules
 ```
 
 ## Firestore Data Structure
@@ -106,11 +110,12 @@ artifacts/
                     └── references: []
 ```
 
-## Security Notes
+## Security & Best Practices
 
+### Firebase Security
 - Firebase web API keys in the code are safe for client-side use
 - **Never commit** service account JSON files or server-side secrets
-- Set up Firestore Security Rules to protect user data:
+- Always set up Firestore Security Rules to protect user data:
 
 ```javascript
 rules_version = '2';
@@ -123,17 +128,47 @@ service cloud.firestore {
 }
 ```
 
+### Authorized Domains
+Make sure to add these domains in Firebase Console → Authentication → Settings → Authorized domains:
+- `localhost` (for local development)
+- `127.0.0.1` (alternative local address)
+- `masood-dev.github.io` (for GitHub Pages)
+
+### OAuth Configuration
+- **Google OAuth**: Configured in Firebase Console
+- **GitHub OAuth**: Requires GitHub OAuth App with callback URL: `https://resume-builder-cd571.firebaseapp.com/__/auth/handler`
+
+## Deployment
+
+### GitHub Pages (Current Setup)
+The project is deployed at: **https://masood-dev.github.io/resume_builder_project/**
+
+To update the live site:
+1. Make changes to your files
+2. Run: `git add -A && git commit -m "your message" && git push`
+3. GitHub Pages auto-deploys from the `main` branch
+
+### Alternative Hosting
+This static site can be deployed to:
+- **Netlify**: Drag and drop the files or connect GitHub repo
+- **Vercel**: Import Git repository
+- **Firebase Hosting**: `firebase init hosting && firebase deploy`
+
 ## Future Enhancements
 
-- [ ] Split into separate CSS/JS files for better maintainability
+- [x] Split into separate CSS/JS files for better maintainability
+- [x] GitHub Pages deployment
+- [x] GitHub OAuth integration
 - [ ] Add multiple resume templates/themes
 - [ ] Export/import resume data as JSON
 - [ ] Add resume sections (projects, certifications, hobbies)
 - [ ] Implement offline support with local storage fallback
+- [ ] Split JavaScript into modular files
 - [ ] Add unit and E2E tests
 - [ ] Set up CI/CD pipeline
 - [ ] Improve accessibility (ARIA labels, keyboard navigation)
 - [ ] Add input validation and sanitization
+- [ ] Add loading states and skeleton screens
 
 ## Contributing
 
