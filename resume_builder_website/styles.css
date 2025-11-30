@@ -1,0 +1,390 @@
+/* Custom styles */
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* Animated gradient background */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale in animation */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Loading view animation */
+#loading-view {
+    animation: fadeIn 0.5s ease;
+}
+
+#loading-view > div {
+    animation: pulse 2s ease infinite;
+}
+
+/* Auth view styling */
+#auth-view {
+    animation: fadeIn 0.6s ease;
+}
+
+#auth-view .w-full.max-w-md {
+    animation: scaleIn 0.6s ease;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Tab styling with animation */
+#tab-login, #tab-register {
+    transition: all 0.3s ease;
+}
+
+#tab-login:hover, #tab-register:hover {
+    transform: translateY(-2px);
+}
+
+/* Input fields styling */
+#auth-view input,
+#resume-form input,
+#resume-form textarea {
+    transition: all 0.3s ease;
+}
+
+#auth-view input:focus,
+#resume-form input:focus,
+#resume-form textarea:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Button styling with hover effects */
+button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+    transform: translateY(-1px);
+}
+
+/* Google sign-in button special styling */
+#google-signin-btn {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+#google-signin-btn:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* App view container */
+#app-view {
+    animation: fadeIn 0.6s ease;
+}
+
+/* App header styling */
+#app-header {
+    animation: slideInRight 0.6s ease;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#welcome-msg {
+    font-size: 1.25rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Print button container */
+#print-button-container {
+    animation: slideInRight 0.7s ease;
+}
+
+#print-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+#print-btn:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+/* Form panel styling */
+#form-panel {
+    animation: fadeIn 0.8s ease;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+#form-panel h1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Fieldset styling */
+fieldset {
+    transition: all 0.3s ease;
+    border: 2px solid #e5e7eb;
+}
+
+fieldset:hover {
+    border-color: #667eea;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+fieldset legend {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Add button styling */
+#add-skill-btn,
+#add-exp-btn,
+#add-edu-btn,
+#add-language-btn,
+#add-ref-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+#add-skill-btn:hover,
+#add-exp-btn:hover,
+#add-edu-btn:hover,
+#add-language-btn:hover,
+#add-ref-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+/* Remove button styling */
+.remove-skill-btn,
+.remove-exp-btn,
+.remove-edu-btn,
+.remove-language-btn,
+.remove-ref-btn {
+    transition: all 0.3s ease;
+}
+
+.remove-skill-btn:hover,
+.remove-exp-btn:hover,
+.remove-edu-btn:hover,
+.remove-language-btn:hover,
+.remove-ref-btn:hover {
+    transform: scale(1.2) rotate(90deg);
+}
+
+/* List items animation */
+#skills-list-form > div,
+#exp-list-form > div,
+#edu-list-form > div,
+#languages-list-form > div,
+#ref-list-form > div {
+    animation: slideInRight 0.3s ease;
+}
+
+/* Logout button */
+#logout-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+#logout-btn:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Google modal styling */
+#google-modal {
+    backdrop-filter: blur(8px);
+}
+
+#google-modal > div {
+    animation: scaleIn 0.4s ease;
+}
+
+#google-modal button {
+    transition: all 0.3s ease;
+}
+
+#google-modal button:hover {
+    background-color: #f3f4f6;
+    transform: translateX(5px);
+}
+
+/* Container styling */
+.container {
+    animation: fadeIn 0.6s ease;
+}
+
+/* Capitalize first letter of resume form inputs */
+#resume-form input[type="text"],
+#resume-form input[type="tel"],
+#resume-form textarea {
+    text-transform: capitalize;
+}
+
+/* Keep email inputs lowercase */
+#resume-form input[type="email"] {
+    text-transform: none;
+}
+
+/* Styles for the resume preview paper */
+#resume-preview-wrapper {
+    background-color: #f8fafc; /* Tailwind gray-50 */
+}
+
+#resume-preview {
+    background-color: #ffffff;
+    /* A4-like aspect ratio (approx) */
+    width: 21cm;
+    min-height: 29.7cm;
+    padding: 0;
+    margin: 2rem auto;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+/* Print styles */
+@media print {
+    /* Remove browser default headers and footers */
+    @page {
+        margin: 0;
+        size: A4;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+    
+    /* Hide the form panel, print button, and header */
+    #form-panel,
+    #print-button-container,
+    #app-header,
+    #auth-view, 
+    #loading-view,
+    #google-modal {
+        display: none !important;
+    }
+    
+    #app-view {
+        display: block !important;
+    }
+
+    /* Show the resume preview wrapper but remove styling */
+    #resume-preview-wrapper {
+        background-color: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Ensure the resume preview takes up the whole page */
+    #resume-preview {
+        width: 100%;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+        page-break-after: auto;
+    }
+    
+    /* Prevent page breaks in sections */
+    #resume-preview section {
+        page-break-inside: avoid;
+    }
+}
