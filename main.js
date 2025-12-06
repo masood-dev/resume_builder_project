@@ -1,9 +1,9 @@
 // Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
-import { 
-    getAuth, 
-    signInWithCustomToken, 
+import {
+    getAuth,
+    signInWithCustomToken,
     onAuthStateChanged,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -12,10 +12,10 @@ import {
     GithubAuthProvider,
     signInWithPopup
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    setDoc, 
+import {
+    getFirestore,
+    doc,
+    setDoc,
     onSnapshot,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
@@ -118,12 +118,14 @@ const previewLanguages = document.getElementById('preview-languages');
 const previewReferences = document.getElementById('preview-references');
 
 // Print Button
-const printBtn = document.getElementById('print-btn');
+// Download Buttons
+const downloadPdfBtn = document.getElementById('download-pdf-btn');
+const downloadDocBtn = document.getElementById('download-doc-btn');
 
 // --- DEBOUNCE UTILITY ---
 let debounceTimer;
 function debounce(func, delay) {
-    return function(...args) {
+    return function (...args) {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             func.apply(this, args);
@@ -139,7 +141,7 @@ function debounce(func, delay) {
 async function saveResumeData() {
     if (!resumeDocRef) return;
     console.log('Saving data...');
-    
+
     const data = {
         name: nameInput.value,
         title: titleInput.value,
@@ -153,7 +155,7 @@ async function saveResumeData() {
         languages: languages,
         references: references
     };
-    
+
     try {
         await setDoc(resumeDocRef, data, { merge: true });
         console.log('Data saved successfully.');
@@ -181,7 +183,7 @@ function loadResumeData() {
         if (doc.exists()) {
             console.log("Current data: ", doc.data());
             const data = doc.data();
-            
+
             // Update form fields
             nameInput.value = data.name || '';
             titleInput.value = data.title || '';
@@ -189,18 +191,18 @@ function loadResumeData() {
             phoneInput.value = data.phone || '';
             locationInput.value = data.location || '';
             summaryInput.value = data.summary || '';
-            
+
             // Update local state arrays
             skills = data.skills || [];
             experiences = data.experiences || [];
             educations = data.educations || [];
             languages = data.languages || [];
             references = data.references || [];
-            
+
             // Re-render everything with the new data
             renderAllFormLists();
             renderAll();
-            
+
         } else {
             console.log("No resume data found for this user. Starting fresh.");
             // Reset fields if no data
@@ -222,7 +224,7 @@ function resetLocalData() {
     educations = [];
     languages = [];
     references = [];
-    
+
     nameInput.value = '';
     titleInput.value = '';
     emailInput.value = '';
@@ -350,7 +352,7 @@ function renderRefFormList() {
 function renderSkillsPreview() {
     previewSkills.innerHTML = '';
     if (skills.length === 0) return;
-    
+
     skills.forEach(skill => {
         const li = document.createElement('li');
         li.className = 'flex items-start gap-2';
@@ -369,7 +371,7 @@ function renderSkillsPreview() {
 function renderExperiencePreview() {
     previewExperience.innerHTML = '';
     if (experiences.length === 0) return;
-    
+
     experiences.forEach(exp => {
         // Format description bullet points
         const descriptionHtml = exp.desc
@@ -419,7 +421,7 @@ function renderEducationPreview() {
 function renderLanguagesPreview() {
     previewLanguages.innerHTML = '';
     if (languages.length === 0) return;
-    
+
     languages.forEach(language => {
         const li = document.createElement('li');
         li.className = 'flex items-start gap-2';
@@ -473,34 +475,34 @@ onAuthStateChanged(auth, (user) => {
         userId = user.uid;
         // Define the path to the user's private resume data
         resumeDocRef = doc(db, 'artifacts', appId, 'users', userId, 'resumeData', 'main');
-        
+
         welcomeMsg.textContent = `Welcome, ${user.email}`;
-        
+
         // Load user's data
         loadResumeData();
-        
+
         // Show app, hide auth
         appView.classList.remove('hidden');
         authView.classList.add('hidden');
         loadingView.classList.add('hidden');
-        
+
     } else {
         // User is signed out
         console.log('User is logged out.');
         userId = null;
         resumeDocRef = null;
-        
+
         // Detach listener if it exists
         if (unsubscribeResume) {
             unsubscribeResume();
             unsubscribeResume = null;
         }
-        
+
         // Reset all local data and UI
         resetLocalData();
         renderAllFormLists();
         renderAll();
-        
+
         // Show auth, hide app
         appView.classList.add('hidden');
         authView.classList.remove('hidden');
@@ -592,7 +594,7 @@ loginForm.addEventListener('submit', async (e) => {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
     authError.textContent = '';
-    
+
     try {
         await signInWithEmailAndPassword(auth, email, password);
         // onAuthStateChanged will handle the UI switch
@@ -629,7 +631,7 @@ githubSignInBtn.addEventListener('click', async () => {
     authError.textContent = '';
     const provider = new GithubAuthProvider();
     provider.addScope('user:email'); // Request email scope
-    
+
     try {
         const result = await signInWithPopup(auth, provider);
         console.log('GitHub sign-in successful:', result.user.email);
@@ -658,7 +660,7 @@ googleModal.addEventListener('click', (e) => {
 googlePopupSignin.addEventListener('click', async () => {
     authError.textContent = '';
     const provider = new GoogleAuthProvider();
-    
+
     try {
         await signInWithPopup(auth, provider);
         googleModal.classList.add('hidden');
@@ -677,7 +679,7 @@ googleAnotherAccount.addEventListener('click', async () => {
     provider.setCustomParameters({
         prompt: 'select_account'
     });
-    
+
     try {
         await signInWithPopup(auth, provider);
         googleModal.classList.add('hidden');
@@ -747,7 +749,7 @@ addExpBtn.addEventListener('click', (e) => {
         endDate: document.getElementById('exp-end-date').value,
         desc: document.getElementById('exp-desc').value,
     };
-    
+
     if (exp.title && exp.company) {
         experiences.push(exp);
         renderExpFormList();
@@ -784,7 +786,7 @@ addEduBtn.addEventListener('click', (e) => {
         startDate: document.getElementById('edu-start-date').value,
         endDate: document.getElementById('edu-end-date').value,
     };
-    
+
     if (edu.degree && edu.school) {
         educations.push(edu);
         renderEduFormList();
@@ -844,7 +846,7 @@ addRefBtn.addEventListener('click', (e) => {
         phone: document.getElementById('ref-phone').value,
         email: document.getElementById('ref-email').value,
     };
-    
+
     if (ref.name && ref.company) {
         references.push(ref);
         renderRefFormList();
@@ -870,9 +872,57 @@ refListForm.addEventListener('click', (e) => {
     }
 });
 
-// Print Button
-printBtn.addEventListener('click', () => {
-    window.print();
+// --- DOWNLOAD LOGIC ---
+
+// Helper to get current filename
+function getFilename(ext) {
+    const name = nameInput.value.trim() || 'Resume';
+    return `${name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_resume.${ext}`;
+}
+
+// Download PDF
+downloadPdfBtn.addEventListener('click', () => {
+    const element = document.getElementById('resume-preview');
+    // Configure options for html2pdf
+    const opt = {
+        margin: 0,
+        filename: getFilename('pdf'),
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Use html2pdf library
+    html2pdf().set(opt).from(element).save();
+});
+
+// Download Word
+downloadDocBtn.addEventListener('click', () => {
+    const element = document.getElementById('resume-preview');
+
+    // Create a complete HTML document for the Word export
+    // We add some basic styles to ensure it looks decent in Word
+    const content = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body { font-family: 'Arial', sans-serif; }
+                /* You can add more specific print styles here if needed */
+            </style>
+        </head>
+        <body>
+            ${element.outerHTML}
+        </body>
+        </html>
+    `;
+
+    // Convert to blob using html-docx-js
+    const converted = htmlDocx.asBlob(content, { orientation: 'portrait' });
+
+    // Save using FileSaver.js
+    saveAs(converted, getFilename('docx'));
 });
 
 // --- INITIALIZATION ---

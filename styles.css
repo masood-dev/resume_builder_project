@@ -12,9 +12,11 @@ body {
     0% {
         background-position: 0% 50%;
     }
+
     50% {
         background-position: 100% 50%;
     }
+
     100% {
         background-position: 0% 50%;
     }
@@ -26,6 +28,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -38,6 +41,7 @@ body {
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -50,6 +54,7 @@ body {
         opacity: 0;
         transform: translateX(30px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -58,9 +63,12 @@ body {
 
 /* Pulse animation */
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.05);
     }
@@ -71,7 +79,7 @@ body {
     animation: fadeIn 0.5s ease;
 }
 
-#loading-view > div {
+#loading-view>div {
     animation: pulse 2s ease infinite;
 }
 
@@ -89,11 +97,13 @@ body {
 }
 
 /* Tab styling with animation */
-#tab-login, #tab-register {
+#tab-login,
+#tab-register {
     transition: all 0.3s ease;
 }
 
-#tab-login:hover, #tab-register:hover {
+#tab-login:hover,
+#tab-register:hover {
     transform: translateY(-2px);
 }
 
@@ -266,11 +276,11 @@ fieldset legend {
 }
 
 /* List items animation */
-#skills-list-form > div,
-#exp-list-form > div,
-#edu-list-form > div,
-#languages-list-form > div,
-#ref-list-form > div {
+#skills-list-form>div,
+#exp-list-form>div,
+#edu-list-form>div,
+#languages-list-form>div,
+#ref-list-form>div {
     animation: slideInRight 0.3s ease;
 }
 
@@ -290,7 +300,7 @@ fieldset legend {
     backdrop-filter: blur(8px);
 }
 
-#google-modal > div {
+#google-modal>div {
     animation: scaleIn 0.4s ease;
 }
 
@@ -322,7 +332,8 @@ fieldset legend {
 
 /* Styles for the resume preview paper */
 #resume-preview-wrapper {
-    background-color: #f8fafc; /* Tailwind gray-50 */
+    background-color: #f8fafc;
+    /* Tailwind gray-50 */
 }
 
 #resume-preview {
@@ -339,28 +350,29 @@ fieldset legend {
 
 /* Print styles */
 @media print {
+
     /* Remove browser default headers and footers */
     @page {
         margin: 0;
         size: A4;
     }
-    
+
     body {
         margin: 0;
         padding: 0;
         background: white;
     }
-    
-    /* Hide the form panel, print button, and header */
+
+    /* Hide the form panel, download buttons, and header */
     #form-panel,
-    #print-button-container,
+    #download-buttons-container,
     #app-header,
-    #auth-view, 
+    #auth-view,
     #loading-view,
     #google-modal {
         display: none !important;
     }
-    
+
     #app-view {
         display: block !important;
     }
@@ -382,7 +394,7 @@ fieldset legend {
         border: none;
         page-break-after: auto;
     }
-    
+
     /* Prevent page breaks in sections */
     #resume-preview section {
         page-break-inside: avoid;
